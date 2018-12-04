@@ -50,10 +50,11 @@ def create_image_path_list():
 	style_dirs = os.listdir(DATABASE_DIR)
 	for style in style_dirs:
 		style_path = "%s/%s" % (DATABASE_DIR, style)
-		images = os.listdir(style_path)
-		for image in images:
-			image_path = "%s/%s" % (style_path, image)
-			image_list.append(image_path)
+		if(os.path.isdir(style_path)):
+			images = os.listdir(style_path)
+			for image in images:
+				image_path = "%s/%s" % (style_path, image)
+				image_list.append(image_path)
 
 	return image_list
 
@@ -84,9 +85,10 @@ def create_image_to_style():
 
 	for style in style_dirs:
 		style_path = "%s/%s" % (DATABASE_DIR, style)
-		images = os.listdir(style_path)
-		for image in images:
-			image_to_style[image] = style
+		if(os.path.isdir(style_path)):
+			images = os.listdir(style_path)
+			for image in images:
+				image_to_style[image] = style
 
 	return image_to_style
 
