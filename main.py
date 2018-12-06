@@ -42,7 +42,7 @@ def main():
 		seed=42)
 
 	gen = generator()
-	disc = discriminator()
+	disc = discriminator_model()
 	adv = adversarial_model()
 
 	train(training_set, gen, disc, adv)
@@ -61,16 +61,18 @@ def train(x_train, generator, discriminator, adversarial, train_steps=2, batch_s
 		print("images_train shape:", images_train.shape)
 		print("shape of images_fake:", images_fake.shape)
 		x = np.concatenate((images_train, images_fake))
-		y = np.ones([2*batch_size, 1])
+		y = np.ones([2*batch_size, 3])
 		y[batch_size:, :] = 0
 		d_loss = discriminator.train_on_batch(x, y)
 
-		y  = np.ones([batch_size, 1])
+		y = np.ones([batch_size, 3])
 		noise = np.random.uniform(-1.0, 1.0, size=[batch_size, 100])
 		a_loss = adversarial.train_on_batch(noise, y)
 		log_mesg = "%d: [D loss: %f, acc: %f]" % (i, d_loss[0], d_loss[1])
+		print(log_mesg)
 		log_mesg = "%s  [A loss: %f, acc: %f]" % (log_mesg, a_loss[0], a_loss[1])
 		print(log_mesg)
+		
 
 		if i % save_int == 0:
 			display_images(generator, images_train, save2file=True, samples=noise.shape[0],\
@@ -83,7 +85,8 @@ def display_images(generator, images_train, save2file=False, fake=True, samples=
 
 	plt.figure(figsize=(10, 10))
 	image = images[0]
-	image = np.reshape(image, [256, 256])
+	image = np.reshape(image, [256, 256, 3]) * 255
+	print(image)
 	plt.imshow(image)
 	plt.axis('off')
 	plt.show()
@@ -153,7 +156,7 @@ def generator():
 	model.add(Activation('relu'))
 
 	model.add(Conv2DTranspose(3, kernel_size=3, padding='same'))
-	model.add(Activation('sigmoid'))
+	model.add(Activation('tanh'))
 	model.summary()
 
 	return model
